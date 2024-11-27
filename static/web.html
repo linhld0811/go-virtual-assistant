@@ -260,3 +260,9 @@
                 document.getElementById('login-error').style.display = 'block';
             }
         });
+
+        // Register form submission
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;

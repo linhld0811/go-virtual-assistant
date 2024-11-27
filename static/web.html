@@ -266,3 +266,108 @@
             e.preventDefault();
             const username = document.getElementById('register-username').value;
             const password = document.getElementById('register-password').value;
+            try {
+                const response = await fetch('http://localhost:8080/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showTab('login');
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';
+                } else {
+                    document.getElementById('register-error').textContent = data.error;
+                    document.getElementById('register-error').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('register-error').textContent = 'Connection error';
+                document.getElementById('register-error').style.display = 'block';
+            }
+        });
+
+        // Show chat interface
+        function showChat() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'block';
+            document.getElementById('username-display').textContent = `Welcome, ${currentUsername}!`;
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chat-input-field');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:8080/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ query: message })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addMessage(data.response, 'assistant');
+                } else {
+                    addMessage('Sorry, there was an error processing your request.', 'assistant');
+                }
+            } catch (error) {
+                addMessage('Connection error. Please try again.', 'assistant');
+            }
+
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Add message to chat
+        function addMessage(content, type) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Logout function
+        function logout() {
+            authToken = '';
+            currentUsername = '';
+            document.getElementById('chat-container').style.display = 'none';
+            document.getElementById('auth-container').style.display = 'block';
+            document.getElementById('chat-messages')[removed] = '';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+        }
+
+        // Handle Enter key in chat input
+        document.getElementById('chat-input-field').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });

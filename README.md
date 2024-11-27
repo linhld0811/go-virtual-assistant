@@ -6,6 +6,7 @@
 ```bash
 git clone https://github.com/linhld0811/go-virtual-assistant.git
 cd go-virtual-assistant
+```
 
 2. Install dependencies
 `go mod download`

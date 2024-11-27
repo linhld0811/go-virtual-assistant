@@ -8,6 +8,24 @@ import (
 	"net/http"
 )
 
+const (
+	defaultGroqURL   = "https://api.groq.com/openai/v1/chat/completions"
+	defaultAuthToken = "Bearer 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"
+)
+
+type ChatbotConfig struct {
+	URL           string
+	Authorization string
+}
+
+// NewDefaultConfig returns a default configuration
+func NewDefaultConfig() *ChatbotConfig {
+	return &ChatbotConfig{
+		URL:           defaultGroqURL,
+		Authorization: defaultAuthToken,
+	}
+}
+
 type RequestBody struct {
 	Model       string  `json:"model"`
 	MaxToken    int     `json:"max_tokens"`
@@ -26,8 +44,10 @@ type Response struct {
 	} `json:"choices"`
 }
 
-func ChatbotService(query string) (string, error) {
-	url := "https://api.groq.com/openai/v1/chat/completions"
+func ChatbotService(query string, config *ChatbotConfig) (string, error) {
+	if config == nil {
+		config = NewDefaultConfig()
+	}
 	contentType := "application/json"
 	authorization := "Bearer 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"
 
@@ -49,7 +69,7 @@ func ChatbotService(query string) (string, error) {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", config.URL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", fmt.Errorf("error creating request: %v", err)
 	}

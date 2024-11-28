@@ -18,7 +18,7 @@ func HandleChat(c *gin.Context) {
 		return
 	}
 
-	response, err := services.ChatbotService(request.Query)
+	response, err := services.ChatbotService(request.Query, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

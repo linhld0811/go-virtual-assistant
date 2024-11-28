@@ -10,7 +10,7 @@ var DB *sql.DB
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/virtual_assistant")
+	DB, err = sql.Open("mysql", "root:example@tcp(127.0.0.1:3307)/virtual_assistant")
 	if err != nil {
 		panic(err)
 	}
